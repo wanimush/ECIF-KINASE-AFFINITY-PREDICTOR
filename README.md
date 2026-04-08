@@ -24,7 +24,7 @@ This workflow focuses on ML based binding affinity prediction for protein kinase
 
 ## 🧪 Methodology
 
-# 1. Data collection & preprocessing
+###  1. Data collection & preprocessing
 
 ### Purpose
 - This step involves the collection, curation, and preprocessing of kinase protein–ligand complexes for both model training and external validation.
@@ -69,7 +69,7 @@ This curation yielded:
 
 *********************************************************************************************************
 
-# 2. Descriptor Calculation  
+###  2. Descriptor Calculation  
 
 **File:** `descriptor_generation.ipynb`
 
@@ -89,7 +89,7 @@ This curation yielded:
 
 *********************************************************************************************************
 
-# 3. Model training & evaluation 
+### 3. Model training & evaluation 
 
 **File:** `model_development.ipynb`
 
@@ -133,7 +133,7 @@ This curation yielded:
 
 *********************************************************************************************************
 
-# 4. External Prediction 
+###  4. External Prediction 
 
 **File:** `model_development.ipynb`
 
@@ -152,7 +152,7 @@ This curation yielded:
 
 *********************************************************************************************************
 
-## 🛠️ Requirements
+##  🛠️ Requirements
 
 The notebook was developed using Python and requires the following libraries:
 
