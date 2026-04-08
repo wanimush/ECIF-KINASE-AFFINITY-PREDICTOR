@@ -133,13 +133,13 @@ df_predictions.to_csv("CXCR4_external_predictions.csv", index=False)
 
 The notebook was developed using Python and requires the following libraries:
 
-●	Python ≥ 3.8 (match your environment)
-●	Jupyter Notebook
-●	RDKit (e.g. 2020.03.x for consistency with ECIF ligand typing in the paper)
-●	pandas, numpy
-●	scikit-learn
-●	XGBoost
-●	Schrödinger Maestro (optional, for reproducing PDB → split → MAE → SDF/PDB steps)
+-Python ≥ 3.8 (match your environment)
+-Jupyter Notebook
+-RDKit (e.g. 2020.03.x for consistency with ECIF ligand typing in the paper)
+-pandas, numpy
+-scikit-learn
+-XGBoost
+-Schrödinger Maestro (optional, for reproducing PDB → split → MAE → SDF/PDB steps)
 
 ### Install dependencies (recommended via conda):
 ```bash
