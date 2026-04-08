@@ -3,212 +3,147 @@ This repository contains Jupyter notebooks and curated datasets for predicting p
 
 The pipeline includes data curation, structure preprocessing, feature generation, model training, evaluation, and external prediction using an independent kinase dataset.
 
-📌 Project Overview
+# CXCR Inhibitor Prediction using Machine Learning
 
-This workflow focuses on structure-based binding affinity prediction for protein kinases and includes:
-Curation of kinase protein–ligand complexes from PDBbind v2020 for training and RCSB PDB for external evaluation
-Preprocessing of protein–ligand structures for consistent cheminformatics input
-Generation of ECIF interaction features across multiple distance cutoffs
-Calculation of RDKit ligand descriptors
-Construction of ECIF-only and ECIF + RDKit merged feature matrices
-Hyperparameter tuning and training of multiple regression models
-Prediction of pIC / binding affinity values
-Performance evaluation using MSE, RMSE, R², and Pearson Correlation Coefficient (PCC)
-External prediction for 5,265 non-overlapping kinase complexes
-🧪 Methodology
-1. Data Collection and Preprocessing
-Purpose
+This repository contains a Python Jupyter Notebook implementing a machine
+learning–based pipeline for predicting CXCR-targeted inhibitors using
+RDKit-derived molecular fingerprints and descriptors.
 
-This step involves the collection, curation, and preprocessing of kinase protein–ligand complexes for both model training and external validation.
+The workflow integrates cheminformatics feature generation with classical
+machine learning models for compound activity prediction.
 
-Training Dataset
+---
 
-Training structures and affinity values were derived from PDBbind v2020, which contains approximately 14,126 protein–ligand complexes in the general set.
+## 📌 Project Overview
 
-A kinase-focused subset was curated using filters such as:
+- Molecular feature generation using **RDKit**
+- Fingerprint-based representation of small molecules
+- Supervised machine learning models for activity prediction
+- Focus on **CXCR receptor–related inhibitor screening**
 
-Protein name
-UniProt information
-PDB ID
-Ligand identity
-Resolution criteria
+---
 
-This curation yielded:
+## 🧪 Methodology
 
-2,494 kinase complexes at the initial download stage
-External Dataset
+1. Descriptor Calculation  
+**File:** `Script_descriptor_calcualation_CXCR4.ipynb`
 
-An independent external kinase dataset was collected from the RCSB Protein Data Bank (PDB) using protein kinase–related search and curation strategies.
+### Purpose
+- Calculate **RDKit molecular descriptors** from SMILES strings
+- Generate a descriptor matrix for CXCR4 datasets
+- Save descriptor names for **reproducibility**
+- Prepare data for model training and prediction
 
-The structures were downloaded using a batch bash workflow, resulting in:
+### Key Steps
+1. Load dataset containing SMILES
+2. Generate RDKit descriptors
+3. Handle invalid molecules
+4. Save:
+   - Descriptor DataFrame
+   - Descriptor name list (`.pkl`)
+   
+### Output
+- Descriptor matrix (`.csv`)
+- Pickled descriptor names (`descriptor_names.pkl`)
 
-6,802 complexes successfully downloaded
-Structure Processing
+2. Model Training & Feature Selection  
+**File:** `Script_training_models_CXCR4.ipynb`
 
-Protein–ligand complexes were processed using Schrödinger Maestro:
+### Purpose
+- Perform **feature selection** using Boruta / RF
+- Scale features using `StandardScaler`
+- Train multiple ML classifiers
+- Save trained models and preprocessing objects
 
-Complexes were split into receptor and ligand
-Ligands were converted to SDF
-Proteins were saved as PDB
+### Machine Learning Models
+- Random Forest (RF)
+- Support Vector Machine (SVM)
+- Gradient Boosting (GB)
+- AdaBoost (AB)
+- Logistic Regression (LR)
+- XGBoost / CatBoost (if enabled)
 
-This ensured compatibility with the downstream feature generation workflow.
+### Key Steps
+1. Load descriptor dataset
+2. Split data into train/test
+3. Feature selection (Boruta)
+4. Feature scaling
+5. Model training & evaluation
+6. Save objects using `pickle` / `joblib`
 
-Final Dataset Counts
-Training Set
+### Output Files
+- `selected_features.pkl`
+- `scaler.pkl`
+- `model_rf.pkl`
+- `model_svm.pkl`
+- `model_gb.pkl`
+- (other trained models)
 
-After ligand standardization and descriptor generation:
+---
 
-2,401 ligands remained after RDKit preprocessing
-2,337 kinase complexes were retained after ECIF and merged descriptor generation
-External Set
+3. External Compound Prediction  
+**File:** `script_external_predictions.ipynb`
 
-After structure processing and feature generation:
+### Purpose
+- Predict CXCR4 activity for **external / novel compounds**
+- Use **exact same descriptors, features, and scaling**
+- Generate predictions from multiple models
 
-6,800 protein PDB files
-6,240 ligand files
-5,265 external kinase complexes retained after ECIF and ECIF–RDKit merged descriptor generation
-Training Structure Directory
+*********************************************************************************************************
 
-Final curated training structures are stored as:
+Prediction Workflow (Step-by-Step)
 
-PDB_general_kinase_training_2337/
-Activity Labels
+Step 1: Prepare External Dataset
+Your input file must contain: SMILES
 
-File: training_activity.csv
+Step 2: Calculate Descriptors
+- Use `Script_descriptor_calcualation_CXCR4.ipynb`
+- Ensure **same RDKit version** as training
+- Output: descriptor DataFrame
 
-This file contains the experimentally derived activity values for the 2,337 final training complexes:
+Step 3: Load Saved Objects
+import pickle
+import joblib
 
-Complex_ID
-pIC
+with open("descriptor_names.pkl", "rb") as f:
+    descriptor_names = pickle.load(f)
 
-It represents the filtered affinity table aligned with the final modeling cohort, rather than the full PDBbind release.
+with open("selected_features.pkl", "rb") as f:
+    selected_features = pickle.load(f)
 
-2. Descriptor Calculation
+scaler = joblib.load("scaler.pkl")
+model_rf = joblib.load("model_rf.pkl")
 
-Notebook: descriptor_generation.ipynb
+Step 4: Preprocess External Data
+X = df_descriptors[descriptor_names]
+X_selected = X[selected_features]
+X_scaled = scaler.transform(X_selected)
 
-Purpose
+Step 5: Generate Predictions
+df_predictions = pd.DataFrame()
 
-This notebook is used to:
+df_predictions["DT"] = dt_model.predict(X_scaled)
+df_predictions["Dt_prob"] = dt_model.predict_proba(X_scaled)[:,1]
 
-Standardize ligands using RDKit
-Compute ECIF protein–ligand interaction features
-Calculate RDKit ligand descriptors
-Merge ECIF and ligand descriptors into model-ready feature tables
-Feature Types
-ECIF Features
+Step 6: Save Prediction Results
+df_predictions.to_csv("CXCR4_external_predictions.csv", index=False)
 
-ECIF encodes protein–ligand atom-type interaction counts within specified distance cutoffs.
+***************************************************************************************************************
+## 🛠️ Requirements
 
-1,540 features per cutoff
-Distance cutoffs typically range from:
-4.0 Å to 15.0 Å
-in 0.5 Å increments
-RDKit Ligand Descriptors
+The notebook was developed using Python and requires the following libraries:
 
-Ligand-specific physicochemical and structural descriptors are calculated using RDKit.
+- Anaconda (24.11.0, 64-bit)
+- Jupyter Notebook (6.4.6)
+- Python ≥ 3.8  
+- RDKit  (2024.3.6)
+- scikit-learn (1.5.2)  
+- pandas  
+- numpy  
+- Boruta (0.4.3)
 
-Key Steps
-Load preprocessed protein PDB and ligand SDF files
-Standardize and sanitize ligands using RDKit
-Explicit hydrogen handling
-Aromaticity assignment
-Molecule sanitization
-Generate:
-ECIF feature matrices
-RDKit ligand descriptor matrices
-Merge descriptor blocks into final feature tables
-Output
-Feature matrices (CSV format)
-ECIF-only descriptor tables
-ECIF + RDKit merged descriptor tables
-Descriptor sets aligned with:
-2,337 training complexes
-5,265 external complexes
-3. Model Training and Evaluation
+### Install dependencies (recommended via conda):
+```bash
+conda install -c conda-forge rdkit scikit-learn pandas numpy matplotlib
 
-Notebook: ecif_models.ipynb
 
-Purpose
-
-This notebook is used to:
-
-Train regression models on:
-ECIF-only features
-ECIF + RDKit merged descriptors
-Perform hyperparameter tuning
-Compare model performance across descriptor types
-Predict binding affinity / pIC values
-Machine Learning Models
-
-The following regression models are used:
-
-Decision Tree (DT)
-Support Vector Regressor (SVR)
-Random Forest (RF)
-Gradient Boosting Regressor (GBR)
-Extreme Gradient Boosting (XGB)
-Key Steps
-Load:
-ECIF-only feature tables
-ECIF + RDKit merged feature tables
-training_activity.csv
-Prepare training and validation splits
-Perform hyperparameter tuning
-Train regression models for each descriptor type
-Evaluate performance using:
-Mean Squared Error (MSE)
-Root Mean Squared Error (RMSE)
-Coefficient of Determination (R²)
-Pearson Correlation Coefficient (PCC)
-Output
-Trained regression models
-Predicted pIC values
-Performance metrics
-Result tables and visualizations generated in the notebook
-Note
-
-This repository may include saved ECIF-only models, while ECIF + RDKit merged models may have been trained and evaluated in the notebook but are not necessarily distributed as serialized files.
-
-4. External Prediction
-Purpose
-
-This step is used to predict binding affinity (pIC) values for an independent external kinase dataset.
-
-External Dataset
-
-Predictions were performed on:
-
-5,265 non-overlapping kinase complexes
-
-These external complexes were evaluated using the same descriptor-generation workflow as the training set.
-
-Prediction Settings
-
-Predictions were generated in two parallel settings:
-
-ECIF-only descriptor models
-ECIF + RDKit merged descriptor models
-
-This allows direct comparison of the predictive utility of:
-
-Protein–ligand interaction features alone
-Interaction features combined with ligand descriptors
-Output
-Predicted pIC / affinity values for external kinase complexes
-Model-wise external prediction results
-🛠️ Requirements
-
-This workflow was developed in Python using Jupyter Notebook.
-
-Core Dependencies
-Python ≥ 3.8
-Jupyter Notebook
-RDKit (recommended: 2020.03.x for consistency with ECIF ligand typing used in the study)
-pandas
-numpy
-scikit-learn
-XGBoost
-Optional Dependency
-Schrödinger Maestro
-Required only if you want to fully reproduce the PDB → split → MAE → SDF/PDB preprocessing workflow
