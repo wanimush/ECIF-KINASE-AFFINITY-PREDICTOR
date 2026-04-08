@@ -8,7 +8,7 @@ The pipeline includes data curation, structure preprocessing, feature generation
 
 ## 📌 Project Overview
 
-This workflow focuses on structure-based binding affinity prediction for protein kinases and includes:
+This workflow focuses on ML based binding affinity prediction for protein kinases and includes:
 
 - Curation of kinase protein–ligand complexes from PDBbind v2020 for training and RCSB PDB for external evaluation
 - Preprocessing of protein–ligand structures for consistent cheminformatics input
@@ -28,6 +28,7 @@ This workflow focuses on structure-based binding affinity prediction for protein
 
 ### Purpose
 - This step involves the collection, curation, and preprocessing of kinase protein–ligand complexes for both model training and external validation.
+
 -- Training Dataset
 - Training structures and affinity values were derived from PDBbind v2020, which contains approximately 14,126 protein–ligand complexes in the general set.
 - A kinase-focused subset was curated using filters such as:
@@ -66,7 +67,10 @@ This curation yielded:
 
 **File:** `ECIF_descriptors_test_clean.csv` and `Merged_ECIF_RDKit_test_nonoverlapped.csv`
 
+*********************************************************************************************************
+
 2. Descriptor Calculation  
+
 **File:** `descriptor_generation.ipynb`
 
 ### Purpose
@@ -81,10 +85,12 @@ This curation yielded:
    
 ### Output
 - Feature matrices (e.g. merged ECIF + RDKit CSV files produced in the notebook workflow).
-- Descriptor sets aligned with 2,337 training complexes and 5,265 external complexes after the full pipeline.
-- 
+- Descriptor sets aligned with 2,330 training complexes and 5,265 external complexes after the full pipeline.
+
+*********************************************************************************************************
 
 3. Model training & evaluation 
+
 **File:** `model_development.ipynb`
 
 ### Purpose
@@ -124,9 +130,11 @@ This curation yielded:
 - Result tables and visualizations generated in the notebook
 ### Note
 - This repository may include saved ECIF-only models, while ECIF + RDKit merged models may have been trained and evaluated in the notebook but are not necessarily distributed as serialized files.
----
+
+*********************************************************************************************************
 
 4. External Prediction 
+
 **File:** `model_development.ipynb`
 
 ### Purpose
