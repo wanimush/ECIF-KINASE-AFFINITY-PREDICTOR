@@ -133,14 +133,13 @@ df_predictions.to_csv("CXCR4_external_predictions.csv", index=False)
 
 The notebook was developed using Python and requires the following libraries:
 
-- Anaconda (24.11.0, 64-bit)
-- Jupyter Notebook (6.4.6)
-- Python ≥ 3.8  
-- RDKit  (2024.3.6)
-- scikit-learn (1.5.2)  
-- pandas  
-- numpy  
-- Boruta (0.4.3)
+●	Python ≥ 3.8 (match your environment)
+●	Jupyter Notebook
+●	RDKit (e.g. 2020.03.x for consistency with ECIF ligand typing in the paper)
+●	pandas, numpy
+●	scikit-learn
+●	XGBoost
+●	Schrödinger Maestro (optional, for reproducing PDB → split → MAE → SDF/PDB steps)
 
 ### Install dependencies (recommended via conda):
 ```bash
