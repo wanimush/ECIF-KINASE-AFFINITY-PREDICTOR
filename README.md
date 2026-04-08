@@ -6,7 +6,6 @@ The pipeline includes data curation, structure preprocessing, feature generation
 📌 Project Overview
 
 This workflow focuses on structure-based binding affinity prediction for protein kinases and includes:
-
 Curation of kinase protein–ligand complexes from PDBbind v2020 for training and RCSB PDB for external evaluation
 Preprocessing of protein–ligand structures for consistent cheminformatics input
 Generation of ECIF interaction features across multiple distance cutoffs
